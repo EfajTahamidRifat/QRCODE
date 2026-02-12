@@ -21,44 +21,48 @@
         </div>
 
         {% if system_active %}
-        <!-- QR Scanner Section -->
-        <div class="glass-morphism rounded-2xl p-8 mb-8">
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Manual UID Entry -->
-                <div>
-                    <h2 class="text-xl font-bold mb-4 flex items-center">
-                        <i class="fas fa-keyboard text-gold mr-3"></i>ম্যানুয়াল এন্ট্রি
-                    </h2>
-                    <form id="manualAttendanceForm" method="POST" action="{{ url_for('attendance_scan') }}">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-2">শিক্ষার্থীর UID</label>
-                                <input type="text" name="uid" id="uidInput" 
-                                       class="glass-input w-full" 
-                                       placeholder="৮ ডিজিটের কোড" 
-                                       pattern="[0-9]{8}" maxlength="8" required>
-                            </div>
-                            <button type="submit" class="btn-3d w-full">
-                                <i class="fas fa-check-circle mr-2"></i>উপস্থিতি নিন
-                            </button>
+        <!-- Three Scanning Methods -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <!-- 1️⃣ Manual UID Entry -->
+            <div class="glass-morphism rounded-2xl p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-keyboard text-gold mr-3"></i>ম্যানুয়াল
+                </h2>
+                <form id="manualAttendanceForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">শিক্ষার্থীর UID</label>
+                            <input type="text" name="uid" id="uidInput" 
+                                   class="glass-input w-full" 
+                                   placeholder="৮ ডিজিটের কোড" 
+                                   pattern="[0-9]{8}" maxlength="8" required>
                         </div>
-                    </form>
-                </div>
+                        <button type="submit" class="btn-3d w-full">
+                            <i class="fas fa-check-circle mr-2"></i>উপস্থিতি নিন
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-                <!-- QR Scanner Placeholder (Webcam scan not implemented, but UI ready) -->
-                <div class="border-l border-gray-700 pl-8">
-                    <h2 class="text-xl font-bold mb-4 flex items-center">
-                        <i class="fas fa-camera text-gold mr-3"></i>কিউআর স্ক্যানার
-                    </h2>
-                    <div class="bg-black/30 rounded-lg p-4 text-center">
-                        <div class="aspect-square flex items-center justify-center border-2 border-dashed border-gold/50 rounded-lg mb-4">
-                            <i class="fas fa-qrcode text-6xl text-gray-500"></i>
-                        </div>
-                        <p class="text-sm text-gray-400">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            ক্যামেরা থেকে স্ক্যান করতে চাইলে কিউআর ইমেজ আপলোড করুন
-                        </p>
-                        <form method="POST" action="{{ url_for('attendance_scan') }}" enctype="multipart/form-data" class="mt-4">
+            <!-- 2️⃣ Live Camera QR Scanner (NEW) -->
+            <div class="glass-morphism rounded-2xl p-6 md:col-span-2">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-camera text-gold mr-3"></i>ক্যামেরা স্ক্যান
+                </h2>
+                <div id="camera-section">
+                    <!-- Camera button and preview area -->
+                    <div id="reader" class="w-full bg-black/30 rounded-lg overflow-hidden" style="min-height: 250px;"></div>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <button id="startCameraBtn" class="btn-3d flex-1">
+                            <i class="fas fa-video mr-2"></i>ক্যামেরা চালু
+                        </button>
+                        <button id="stopCameraBtn" class="btn-3d flex-1 bg-gray-600 hover:bg-gray-700 hidden">
+                            <i class="fas fa-stop mr-2"></i>বন্ধ করুন
+                        </button>
+                        <!-- Fallback file upload -->
+                        <form id="qrUploadForm" method="POST" action="{{ url_for('attendance_scan') }}" enctype="multipart/form-data" class="flex-1">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="file" name="qr_image" accept="image/*" class="hidden" id="qrImageInput">
                             <label for="qrImageInput" class="btn-3d w-full inline-block text-center cursor-pointer">
                                 <i class="fas fa-upload mr-2"></i>ছবি আপলোড
@@ -100,71 +104,199 @@
     </div>
 </div>
 
+<!-- Include html5-qrcode library from CDN -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Load today's attendance via API
-    fetch('{{ url_for("today_attendance_api") }}')
-        .then(res => res.json())
-        .then(data => {
-            const tbody = document.querySelector('#recentScansTable tbody');
-            tbody.innerHTML = '';
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">আজ কোনো উপস্থিতি নেয়া হয়নি</td></tr>';
-            } else {
-                data.slice(0, 10).forEach(record => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${record.time}</td>
-                        <td class="font-bold">${record.student_name}</td>
-                        <td>${record.class}ম</td>
-                        <td>${record.roll}</td>
-                        <td><span class="px-2 py-1 bg-gold/20 rounded-full text-xs">${record.method}</span></td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-        });
+    // ---------- COMMON FUNCTIONS ----------
+    const resultDiv = document.getElementById('scanResult');
+    const tbody = document.querySelector('#recentScansTable tbody');
 
-    // Manual form submit via AJAX
-    const form = document.getElementById('manualAttendanceForm');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const uid = document.getElementById('uidInput').value;
+    // Load today's attendance from API
+    function loadTodayScans() {
+        fetch('{{ url_for("today_attendance_api") }}')
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = '';
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">আজ কোনো উপস্থিতি নেয়া হয়নি</td></tr>';
+                } else {
+                    data.slice(0, 10).forEach(record => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${record.time}</td>
+                            <td class="font-bold">${record.student_name}</td>
+                            <td>${record.class}ম</td>
+                            <td>${record.roll}</td>
+                            <td><span class="px-2 py-1 bg-gold/20 rounded-full text-xs">${record.method}</span></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            });
+    }
+
+    // Show scan result (success/error)
+    function showResult(success, data) {
+        resultDiv.classList.remove('hidden');
+        if (success) {
+            resultDiv.innerHTML = `
+                <div class="flex items-center text-green-400">
+                    <i class="fas fa-check-circle text-3xl mr-4"></i>
+                    <div>
+                        <h3 class="text-xl font-bold">উপস্থিতি সফল হয়েছে</h3>
+                        <p class="text-gray-300">${data.student.name}, শ্রেণী: ${data.student.class}ম, সময়: ${data.student.time}</p>
+                    </div>
+                </div>
+            `;
+            // Clear input fields
+            document.getElementById('uidInput').value = '';
+            // Refresh recent scans
+            loadTodayScans();
+        } else {
+            resultDiv.innerHTML = `
+                <div class="flex items-center text-red-400">
+                    <i class="fas fa-exclamation-circle text-3xl mr-4"></i>
+                    <div>
+                        <h3 class="text-xl font-bold">ত্রুটি</h3>
+                        <p class="text-gray-300">${data.error || 'অজানা ত্রুটি'}</p>
+                    </div>
+                </div>
+            `;
+        }
+        // Auto-hide after 5 seconds
+        setTimeout(() => resultDiv.classList.add('hidden'), 5000);
+    }
+
+    // Send UID to server and handle response
+    function submitUID(uid, method = 'manual') {
         fetch('{{ url_for("attendance_scan") }}', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ uid: uid })
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token() }}'   // if CSRF protection is active
+            },
+            body: new URLSearchParams({ uid: uid, method: method })
         })
         .then(res => res.json())
         .then(data => {
-            const resultDiv = document.getElementById('scanResult');
-            resultDiv.classList.remove('hidden');
-            if (data.success) {
-                resultDiv.innerHTML = `
-                    <div class="flex items-center text-green-400">
-                        <i class="fas fa-check-circle text-3xl mr-4"></i>
-                        <div>
-                            <h3 class="text-xl font-bold">উপস্থিতি সফল হয়েছে</h3>
-                            <p class="text-gray-300">${data.student.name}, শ্রেণী: ${data.student.class}ম, সময়: ${data.student.time}</p>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('uidInput').value = '';
-                // Reload recent scans
-                setTimeout(() => location.reload(), 1500);
+            showResult(data.success, data);
+        })
+        .catch(err => {
+            showResult(false, { error: 'নেটওয়ার্ক ত্রুটি' });
+        });
+    }
+
+    // ---------- 1. MANUAL FORM SUBMIT ----------
+    const manualForm = document.getElementById('manualAttendanceForm');
+    manualForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const uid = document.getElementById('uidInput').value;
+        if (uid.length === 8) {
+            submitUID(uid, 'ম্যানুয়াল');
+        } else {
+            showResult(false, { error: '৮ ডিজিটের UID দিন' });
+        }
+    });
+
+    // ---------- 2. LIVE CAMERA SCANNER (html5-qrcode) ----------
+    let html5QrCode = null;
+    const startBtn = document.getElementById('startCameraBtn');
+    const stopBtn = document.getElementById('stopCameraBtn');
+    const readerElement = document.getElementById('reader');
+
+    // Callback when QR code is successfully scanned
+    function onScanSuccess(decodedText, decodedResult) {
+        // Assume the QR code contains the UID (8 digit number)
+        const uid = decodedText.trim();
+        if (/^\d{8}$/.test(uid)) {
+            submitUID(uid, 'ক্যামেরা');
+            // Optional: beep or flash
+        } else {
+            showResult(false, { error: 'অবৈধ QR কোড – ৮ ডিজিটের UID নয়' });
+        }
+    }
+
+    startBtn.addEventListener('click', function() {
+        // Hide start button, show stop button
+        startBtn.classList.add('hidden');
+        stopBtn.classList.remove('hidden');
+
+        // Initialize scanner
+        html5QrCode = new Html5Qrcode("reader");
+        const config = { fps: 10, qrbox: 250 };
+        // Use back camera by default
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                // Prefer back camera if available
+                let cameraId = devices[0].id;
+                const backCamera = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
+                if (backCamera) cameraId = backCamera.id;
+                
+                html5QrCode.start(
+                    cameraId,
+                    config,
+                    onScanSuccess,
+                    (errorMessage) => { /* ignore scan errors */ }
+                ).catch(err => {
+                    showResult(false, { error: 'ক্যামেরা চালু করা যায়নি: ' + err });
+                    startBtn.classList.remove('hidden');
+                    stopBtn.classList.add('hidden');
+                });
             } else {
-                resultDiv.innerHTML = `
-                    <div class="flex items-center text-red-400">
-                        <i class="fas fa-exclamation-circle text-3xl mr-4"></i>
-                        <div>
-                            <h3 class="text-xl font-bold">ত্রুটি</h3>
-                            <p class="text-gray-300">${data.error || 'অজানা ত্রুটি'}</p>
-                        </div>
-                    </div>
-                `;
+                showResult(false, { error: 'কোনো ক্যামেরা পাওয়া যায়নি' });
+                startBtn.classList.remove('hidden');
+                stopBtn.classList.add('hidden');
             }
+        }).catch(err => {
+            showResult(false, { error: 'ক্যামেরা অ্যাক্সেস অনুমতি দেওয়া হয়নি' });
+            startBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
         });
     });
+
+    stopBtn.addEventListener('click', function() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+                html5QrCode = null;
+                startBtn.classList.remove('hidden');
+                stopBtn.classList.add('hidden');
+            });
+        }
+    });
+
+    // ---------- 3. FILE UPLOAD (already handled by form, but we can AJAX it if needed) ----------
+    const fileInput = document.getElementById('qrImageInput');
+    fileInput.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            // Auto-submit the upload form
+            document.getElementById('qrUploadForm').submit();
+        }
+    });
+
+    // ---------- INITIAL LOAD ----------
+    loadTodayScans();
 });
 </script>
+
+<!-- Optional: style to make camera feed responsive -->
+<style>
+    #reader {
+        width: 100%;
+        height: auto;
+    }
+    #reader video {
+        width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+    }
+    #reader__dashboard_section_csr button {
+        @apply btn-3d text-sm px-3 py-2;
+    }
+    #reader__dashboard_section_swaplink {
+        @apply text-gold hover:underline;
+    }
+</style>
 {% endblock %}
