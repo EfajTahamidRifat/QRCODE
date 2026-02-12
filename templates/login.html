@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}লগইন - শিক্ষক/এডমিন{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 glass-morphism p-10 rounded-2xl">
+        <div class="text-center">
+            <div class="mx-auto h-20 w-20 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                <i class="fas fa-user-shield text-4xl text-royal"></i>
+            </div>
+            <h2 class="mt-6 text-3xl font-bold gradient-text">প্রশাসক / শিক্ষক</h2>
+            <p class="mt-2 text-sm text-gray-300">আপনার অ্যাকাউন্টে লগইন করুন</p>
+        </div>
+        <form class="mt-8 space-y-6" method="POST" action="{{ url_for('login') }}">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-envelope mr-2 text-gold"></i>ইমেইল
+                    </label>
+                    <input type="email" name="email" required
+                           class="glass-input w-full"
+                           placeholder="admin@madrasha.edu">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-lock mr-2 text-gold"></i>পাসওয়ার্ড
+                    </label>
+                    <input type="password" name="password" required
+                           class="glass-input w-full"
+                           placeholder="••••••••">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="text-sm">
+                    <a href="#" class="text-gold hover:text-warmOrange">
+                        পাসওয়ার্ড ভুলে গেছেন?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="btn-3d w-full">
+                    <i class="fas fa-sign-in-alt mr-2"></i>লগইন
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-4 text-center">
+            <p class="text-sm text-gray-400">
+                অভিভাবক? <a href="{{ url_for('parent_login') }}" class="text-gold hover:underline">এখানে লগইন করুন</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

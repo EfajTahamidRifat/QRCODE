@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}অভিভাবক লগইন{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 glass-morphism p-10 rounded-2xl">
+        <div class="text-center">
+            <div class="mx-auto h-20 w-20 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                <i class="fas fa-user-friends text-4xl text-royal"></i>
+            </div>
+            <h2 class="mt-6 text-3xl font-bold gradient-text">অভিভাবক লগইন</h2>
+            <p class="mt-2 text-sm text-gray-300">আপনার মোবাইল ও পাসওয়ার্ড দিন</p>
+        </div>
+        <form class="mt-8 space-y-6" method="POST" action="{{ url_for('parent_login') }}">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-phone-alt mr-2 text-gold"></i>মোবাইল নম্বর
+                    </label>
+                    <input type="tel" name="phone" required
+                           class="glass-input w-full"
+                           placeholder="০১৭১২৩৪৫৬৭৮">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-lock mr-2 text-gold"></i>পাসওয়ার্ড
+                    </label>
+                    <input type="password" name="password" required
+                           class="glass-input w-full"
+                           placeholder="••••••">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="text-sm">
+                    <a href="{{ url_for('parent_forgot_password') }}" class="text-gold hover:text-warmOrange">
+                        পাসওয়ার্ড ভুলে গেছেন?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="btn-3d w-full">
+                    <i class="fas fa-sign-in-alt mr-2"></i>লগইন
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}মার্কস এন্ট্রি - {{ class_level }}ম শ্রেণী{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-table mr-3"></i>{{ exam.name }} - {{ exam.year }}
+                </h1>
+                <p class="text-gray-300">{{ class_level }}ম শ্রেণীর মার্কস এন্ট্রি</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <form method="POST" action="{{ url_for('publish_results') }}" class="inline">
+                    <input type="hidden" name="class_level" value="{{ class_level }}">
+                    <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                    <button type="submit" class="btn-3d" onclick="return confirm('ফলাফল প্রকাশ করলে শিক্ষার্থীরা দেখতে পাবে। নিশ্চিত?')">
+                        <i class="fas fa-globe mr-2"></i>ফলাফল প্রকাশ করুন
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-morphism rounded-2xl overflow-hidden">
+        <form method="POST" action="{{ url_for('enter_marks', class_level=class_level, exam_id=exam.id) }}">
+            <div class="overflow-x-auto">
+                <table class="glass-table w-full">
+                    <thead>
+                        <tr>
+                            <th>রোল</th>
+                            <th>নাম</th>
+                            {% for subj in subjects %}
+                            <th>{{ subj.subject_name }}<br><span class="text-xs text-gold">পূর্ণ: {{ subj.full_marks }}</span></th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.roll }}</td>
+                            <td class="font-bold">{{ student.name }}</td>
+                            {% for subj in subjects %}
+                            <td>
+                                <input type="text" 
+                                       name="marks_{{ student.id }}_{{ subj.subject_name }}"
+                                       value="{{ result_map[student.id][subj.subject_name] if result_map and result_map[student.id] else '' }}"
+                                       class="glass-input w-20 text-center"
+                                       placeholder="মার্কস">
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-6 text-center">
+                <button type="submit" class="btn-3d px-12">
+                    <i class="fas fa-save mr-2"></i>সব মার্কস সংরক্ষণ করুন
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Auto-calculate total? Already done server-side.
+</script>
+{% endblock %}

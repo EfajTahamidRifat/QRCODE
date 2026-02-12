@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}আইডি কার্ড ভেরিফিকেশন{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="glass-morphism rounded-2xl p-8 mb-8 text-center">
+            <div class="w-20 h-20 mx-auto bg-gradient-to-r from-gold to-warmOrange rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-shield-alt text-4xl text-royal"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">আইডি কার্ড ভেরিফিকেশন</h1>
+            <p class="text-gray-300">UID এবং CVV দিয়ে আইডি কার্ডের সত্যতা যাচাই করুন</p>
+        </div>
+
+        <div class="glass-morphism rounded-2xl p-8">
+            <form method="POST" action="{{ url_for('verify_id_card') }}" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-qrcode mr-2 text-gold"></i>শিক্ষার্থীর UID
+                    </label>
+                    <input type="text" name="uid" required
+                           class="glass-input w-full"
+                           placeholder="৮ ডিজিটের কোড"
+                           pattern="[0-9]{8}" maxlength="8">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-lock mr-2 text-gold"></i>CVV কোড
+                    </label>
+                    <input type="text" name="cvv" required
+                           class="glass-input w-full"
+                           placeholder="৪ ডিজিটের কোড"
+                           pattern="[0-9]{4}" maxlength="4">
+                </div>
+                <button type="submit" class="btn-3d w-full">
+                    <i class="fas fa-check-circle mr-2"></i>ভেরিফাই করুন
+                </button>
+            </form>
+
+            {% if verified %}
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <div class="bg-green-500/20 rounded-lg p-6 text-center">
+                    <i class="fas fa-check-circle text-5xl text-green-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-white mb-2">ভেরিফিকেশন সফল!</h3>
+                    <p class="text-gray-300 mb-2">এই আইডি কার্ডটি বৈধ।</p>
+                    <div class="mt-4 bg-royal/30 rounded-lg p-4 text-left">
+                        <p><span class="text-gold">নাম:</span> {{ student.name }}</p>
+                        <p><span class="text-gold">শ্রেণী:</span> {{ student.class_level }}ম</p>
+                        <p><span class="text-gold">রোল:</span> {{ student.roll }}</p>
+                        <p><span class="text-gold">পিতার নাম:</span> {{ student.father_name }}</p>
+                        <p><span class="text-gold">মাতার নাম:</span> {{ student.mother_name }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

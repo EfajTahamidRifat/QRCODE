@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}শিক্ষার্থী ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-users mr-3"></i>শিক্ষার্থী ব্যবস্থাপনা
+                </h1>
+                <p class="text-gray-300">মোট সক্রিয় শিক্ষার্থী: {{ students|length }}</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex space-x-3">
+                <button onclick="toggleAddForm()" class="btn-3d">
+                    <i class="fas fa-plus-circle mr-2"></i>নতুন শিক্ষার্থী
+                </button>
+                <div class="relative">
+                    <select onchange="window.location.href='{{ url_for('manage_students') }}?class='+this.value" 
+                            class="glass-input appearance-none pr-10">
+                        <option value="all">সব শ্রেণী</option>
+                        {% for c in range(1,13) %}
+                        <option value="{{ c }}" {% if request.args.get('class')|int == c %}selected{% endif %}>{{ c }}ম শ্রেণী</option>
+                        {% endfor %}
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Form (hidden by default) -->
+    <div id="addStudentForm" class="glass-morphism rounded-2xl p-8 mb-8 hidden">
+        <h2 class="text-xl font-bold mb-6 flex items-center">
+            <i class="fas fa-user-plus text-gold mr-3"></i>নতুন শিক্ষার্থী যুক্ত করুন
+        </h2>
+        <form method="POST" class="grid md:grid-cols-2 gap-6">
+            <input type="hidden" name="add_student" value="1">
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">পূর্ণ নাম *</label>
+                <input type="text" name="name" required class="glass-input w-full" placeholder="শিক্ষার্থীর নাম">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">শ্রেণী *</label>
+                <select name="class_level" required class="glass-input w-full">
+                    {% for c in range(1,13) %}
+                    <option value="{{ c }}">{{ c }}ম শ্রেণী</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">রোল নম্বর *</label>
+                <input type="number" name="roll" required class="glass-input w-full" placeholder="যেমন: ১">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">পিতার নাম *</label>
+                <input type="text" name="father_name" required class="glass-input w-full" placeholder="পিতার নাম">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">পিতার মোবাইল *</label>
+                <input type="tel" name="father_phone" required class="glass-input w-full" placeholder="০১৭১২৩৪৫৬৭৮">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">মাতার নাম</label>
+                <input type="text" name="mother_name" class="glass-input w-full" placeholder="মাতার নাম">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">মাতার মোবাইল</label>
+                <input type="tel" name="mother_phone" class="glass-input w-full" placeholder="০১৭১২৩৪৫৬৭৮">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">জন্ম তারিখ</label>
+                <input type="date" name="birth_date" class="glass-input w-full">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">ব্লাড গ্রুপ</label>
+                <select name="blood_group" class="glass-input w-full">
+                    <option value="">নির্বাচন করুন</option>
+                    <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                    <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm text-gray-400 mb-2">ঠিকানা</label>
+                <textarea name="address" rows="3" class="glass-input w-full" placeholder="শিক্ষার্থীর ঠিকানা"></textarea>
+            </div>
+            <div class="md:col-span-2 flex space-x-4">
+                <button type="submit" class="btn-3d px-8">
+                    <i class="fas fa-save mr-2"></i>সংরক্ষণ করুন
+                </button>
+                <button type="button" onclick="toggleAddForm()" class="px-8 bg-gray-600/50 text-white rounded-lg hover:bg-gray-600 transition">
+                    বাতিল
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Students List -->
+    <div class="glass-morphism rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="glass-table w-full">
+                <thead>
+                    <tr>
+                        <th>UID</th>
+                        <th>নাম</th>
+                        <th>শ্রেণী</th>
+                        <th>রোল</th>
+                        <th>পিতার নাম</th>
+                        <th>মোবাইল</th>
+                        <th>আইডি কার্ড</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td class="font-mono">{{ student.uid }}</td>
+                        <td class="font-bold">{{ student.name }}</td>
+                        <td>{{ student.class_level }}ম</td>
+                        <td>{{ student.roll }}</td>
+                        <td>{{ student.father_name }}</td>
+                        <td>{{ student.father_phone }}</td>
+                        <td>
+                            {% if student.id_card_token %}
+                            <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">
+                                <i class="fas fa-check-circle mr-1"></i>জেনারেটেড
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs">
+                                <i class="fas fa-clock mr-1"></i>নেই
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="flex space-x-2">
+                                <a href="{{ url_for('generate_id_card', student_id=student.id) }}" 
+                                   class="px-3 py-1 bg-gold/20 text-gold rounded-lg text-sm hover:bg-gold/30 transition">
+                                    <i class="fas fa-id-card"></i>
+                                </a>
+                                <form method="POST" class="inline" onsubmit="return confirm('শিক্ষার্থীকে নিষ্ক্রিয় করবেন?');">
+                                    <input type="hidden" name="delete_student" value="1">
+                                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                                    <button type="submit" class="px-3 py-1 bg-red-500/20 text-red-400 rounded-lg text-sm hover:bg-red-500/30 transition">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-12 text-gray-400">
+                            <i class="fas fa-user-slash text-4xl mb-3"></i>
+                            <p>কোনো শিক্ষার্থী পাওয়া যায়নি</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleAddForm() {
+    const form = document.getElementById('addStudentForm');
+    form.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

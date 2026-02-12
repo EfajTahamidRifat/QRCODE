@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}মার্কশিট - {{ student.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="glass-morphism rounded-2xl p-8 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">মার্কশিট</h1>
+                    <p class="text-gray-300">{{ exam.name }} - {{ exam.year }}</p>
+                </div>
+                <a href="{{ url_for('view_marksheet', token=result.download_token) }}?download=1" 
+                   class="btn-3d">
+                    <i class="fas fa-download mr-2"></i>পিডিএফ ডাউনলোড
+                </a>
+            </div>
+        </div>
+
+        <!-- Student Info -->
+        <div class="glass-morphism rounded-2xl p-6 mb-6">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-gray-400">শিক্ষার্থীর নাম</p>
+                    <p class="text-xl font-bold">{{ student.name }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-400">শ্রেণী / রোল</p>
+                    <p class="text-xl font-bold">{{ student.class_level }}ম / {{ student.roll }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-400">পিতার নাম</p>
+                    <p>{{ student.father_name }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-400">মাতার নাম</p>
+                    <p>{{ student.mother_name }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marks Table -->
+        <div class="glass-morphism rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-star text-gold mr-3"></i>প্রাপ্ত নম্বর
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="glass-table w-full">
+                    <thead>
+                        <tr>
+                            <th>বিষয়</th>
+                            <th>পূর্ণ নম্বর</th>
+                            <th>প্রাপ্ত নম্বর</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subj_name, marks in result.subject_marks.items() %}
+                        <tr>
+                            <td>{{ subj_name }}</td>
+                            <td>১০০</td>
+                            <td class="font-bold">{{ marks }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="glass-morphism rounded-2xl p-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <p class="text-gray-400 text-sm">মোট নম্বর</p>
+                    <h3 class="text-2xl font-bold">{{ result.total_marks }}</h3>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-sm">প্রাপ্ত নম্বর</p>
+                    <h3 class="text-2xl font-bold text-green-400">{{ "%.0f"|format(result.obtained_marks) }}</h3>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-sm">শতাংশ</p>
+                    <h3 class="text-2xl font-bold">{{ "%.2f"|format(result.percentage) }}%</h3>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-sm">গ্রেড</p>
+                    <h3 class="text-2xl font-bold text-gold">{{ result.grade }}</h3>
+                </div>
+            </div>
+            <div class="mt-6 text-center text-gray-400 text-sm">
+                <i class="fas fa-check-circle mr-1"></i>
+                ফলাফল প্রকাশিত: {{ result.published_at.strftime('%d/%m/%Y %I:%M %p') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

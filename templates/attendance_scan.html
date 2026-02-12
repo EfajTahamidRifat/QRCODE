@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}উপস্থিতি স্ক্যান{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="glass-morphism rounded-2xl p-8 mb-8 text-center">
+            <div class="w-20 h-20 mx-auto bg-gradient-to-r from-gold to-warmOrange rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-qrcode text-4xl text-royal"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">উপস্থিতি স্ক্যান</h1>
+            {% if not system_active %}
+                <div class="mt-4 p-4 bg-red-500/20 border border-red-500 rounded-lg">
+                    <i class="fas fa-exclamation-triangle mr-2 text-red-500"></i>
+                    <span class="text-white">উপস্থিতি ব্যবস্থা বর্তমানে বন্ধ আছে। এডমিনের সাথে যোগাযোগ করুন।</span>
+                </div>
+            {% else %}
+                <p class="text-gray-300">শিক্ষার্থীর কিউআর কোড স্ক্যান করুন অথবা UID লিখুন</p>
+            {% endif %}
+        </div>
+
+        {% if system_active %}
+        <!-- QR Scanner Section -->
+        <div class="glass-morphism rounded-2xl p-8 mb-8">
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Manual UID Entry -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-keyboard text-gold mr-3"></i>ম্যানুয়াল এন্ট্রি
+                    </h2>
+                    <form id="manualAttendanceForm" method="POST" action="{{ url_for('attendance_scan') }}">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">শিক্ষার্থীর UID</label>
+                                <input type="text" name="uid" id="uidInput" 
+                                       class="glass-input w-full" 
+                                       placeholder="৮ ডিজিটের কোড" 
+                                       pattern="[0-9]{8}" maxlength="8" required>
+                            </div>
+                            <button type="submit" class="btn-3d w-full">
+                                <i class="fas fa-check-circle mr-2"></i>উপস্থিতি নিন
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- QR Scanner Placeholder (Webcam scan not implemented, but UI ready) -->
+                <div class="border-l border-gray-700 pl-8">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-camera text-gold mr-3"></i>কিউআর স্ক্যানার
+                    </h2>
+                    <div class="bg-black/30 rounded-lg p-4 text-center">
+                        <div class="aspect-square flex items-center justify-center border-2 border-dashed border-gold/50 rounded-lg mb-4">
+                            <i class="fas fa-qrcode text-6xl text-gray-500"></i>
+                        </div>
+                        <p class="text-sm text-gray-400">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            ক্যামেরা থেকে স্ক্যান করতে চাইলে কিউআর ইমেজ আপলোড করুন
+                        </p>
+                        <form method="POST" action="{{ url_for('attendance_scan') }}" enctype="multipart/form-data" class="mt-4">
+                            <input type="file" name="qr_image" accept="image/*" class="hidden" id="qrImageInput">
+                            <label for="qrImageInput" class="btn-3d w-full inline-block text-center cursor-pointer">
+                                <i class="fas fa-upload mr-2"></i>ছবি আপলোড
+                            </label>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Result Display -->
+        <div id="scanResult" class="hidden glass-morphism rounded-2xl p-8 mb-8 border-l-4 border-gold">
+            <!-- Filled by AJAX -->
+        </div>
+
+        <!-- Recent Scans -->
+        <div class="glass-morphism rounded-2xl p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-clock text-gold mr-3"></i>আজকের স্ক্যান ইতিহাস
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="glass-table w-full" id="recentScansTable">
+                    <thead>
+                        <tr>
+                            <th>সময়</th>
+                            <th>নাম</th>
+                            <th>শ্রেণী</th>
+                            <th>রোল</th>
+                            <th>পদ্ধতি</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filled via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load today's attendance via API
+    fetch('{{ url_for("today_attendance_api") }}')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#recentScansTable tbody');
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">আজ কোনো উপস্থিতি নেয়া হয়নি</td></tr>';
+            } else {
+                data.slice(0, 10).forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.time}</td>
+                        <td class="font-bold">${record.student_name}</td>
+                        <td>${record.class}ম</td>
+                        <td>${record.roll}</td>
+                        <td><span class="px-2 py-1 bg-gold/20 rounded-full text-xs">${record.method}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        });
+
+    // Manual form submit via AJAX
+    const form = document.getElementById('manualAttendanceForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const uid = document.getElementById('uidInput').value;
+        fetch('{{ url_for("attendance_scan") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ uid: uid })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const resultDiv = document.getElementById('scanResult');
+            resultDiv.classList.remove('hidden');
+            if (data.success) {
+                resultDiv.innerHTML = `
+                    <div class="flex items-center text-green-400">
+                        <i class="fas fa-check-circle text-3xl mr-4"></i>
+                        <div>
+                            <h3 class="text-xl font-bold">উপস্থিতি সফল হয়েছে</h3>
+                            <p class="text-gray-300">${data.student.name}, শ্রেণী: ${data.student.class}ম, সময়: ${data.student.time}</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('uidInput').value = '';
+                // Reload recent scans
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="flex items-center text-red-400">
+                        <i class="fas fa-exclamation-circle text-3xl mr-4"></i>
+                        <div>
+                            <h3 class="text-xl font-bold">ত্রুটি</h3>
+                            <p class="text-gray-300">${data.error || 'অজানা ত্রুটি'}</p>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

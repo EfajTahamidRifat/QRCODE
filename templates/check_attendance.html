@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}উপস্থিতি চেক করুন{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="glass-morphism rounded-2xl p-8 mb-8 text-center">
+            <div class="w-20 h-20 mx-auto bg-gradient-to-r from-gold to-warmOrange rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-search text-4xl text-royal"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">শিক্ষার্থীর উপস্থিতি চেক</h1>
+            <p class="text-gray-300">UID এবং মোবাইল নম্বরের শেষ ৪ ডিজিট দিন</p>
+        </div>
+
+        <div class="glass-morphism rounded-2xl p-8">
+            <form method="POST" action="{{ url_for('check_attendance') }}" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-qrcode mr-2 text-gold"></i>শিক্ষার্থীর UID
+                    </label>
+                    <input type="text" name="uid" required
+                           class="glass-input w-full"
+                           placeholder="৮ ডিজিটের কোড"
+                           pattern="[0-9]{8}" maxlength="8">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-phone-alt mr-2 text-gold"></i>পিতার মোবাইল (শেষ ৪ ডিজিট)
+                    </label>
+                    <input type="text" name="phone_last4" 
+                           class="glass-input w-full"
+                           placeholder="যেমন: ৩৪৫৬"
+                           pattern="[0-9]{4}" maxlength="4">
+                    <p class="text-xs text-gray-400 mt-1">ঐচ্ছিক, সঠিক তথ্য নিশ্চিত করতে</p>
+                </div>
+                <button type="submit" class="btn-3d w-full">
+                    <i class="fas fa-check-circle mr-2"></i>উপস্থিতি যাচাই করুন
+                </button>
+            </form>
+
+            {% if show_result %}
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-clipboard-check text-gold mr-3"></i>ফলাফল
+                </h2>
+                <div class="bg-royal/30 rounded-lg p-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user-graduate text-3xl text-royal"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold">{{ student.name }}</h3>
+                            <p class="text-gray-300">{{ student.class_level }}ম শ্রেণী, রোল: {{ student.roll }}</p>
+                            <div class="mt-3">
+                                {% if status == 'present' %}
+                                <span class="px-4 py-2 bg-green-500/20 text-green-400 rounded-full text-sm">
+                                    <i class="fas fa-check-circle mr-1"></i>উপস্থিত ({{ attendance.check_in_time.strftime('%I:%M %p') }})
+                                </span>
+                                {% elif status == 'absent' %}
+                                <span class="px-4 py-2 bg-red-500/20 text-red-400 rounded-full text-sm">
+                                    <i class="fas fa-times-circle mr-1"></i>অনুপস্থিত
+                                </span>
+                                {% else %}
+                                <span class="px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-full text-sm">
+                                    <i class="fas fa-clock mr-1"></i>অপেক্ষমাণ (সকাল ১১টার পর অনুপস্থিত গণ্য হবে)
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}ফলাফল এন্ট্রি - নির্বাচন{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="glass-morphism rounded-2xl p-8 mb-8 text-center">
+            <div class="w-20 h-20 mx-auto bg-gradient-to-r from-gold to-warmOrange rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-edit text-4xl text-royal"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">ফলাফল এন্ট্রি</h1>
+            <p class="text-gray-300">শ্রেণী ও পরীক্ষা নির্বাচন করুন</p>
+        </div>
+
+        <div class="glass-morphism rounded-2xl p-8">
+            <form method="POST" action="{{ url_for('result_entry') }}" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-users mr-2 text-gold"></i>শ্রেণী
+                    </label>
+                    <select name="class_level" required class="glass-input w-full">
+                        {% for c in range(1,13) %}
+                        <option value="{{ c }}">{{ c }}ম শ্রেণী</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-file-alt mr-2 text-gold"></i>পরীক্ষা
+                    </label>
+                    <select name="exam_id" required class="glass-input w-full">
+                        <option value="">নির্বাচন করুন</option>
+                        {% for exam in exams %}
+                        <option value="{{ exam.id }}">{{ exam.name }} - {{ exam.year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-3d w-full">
+                    <i class="fas fa-arrow-right mr-2"></i>মার্কস এন্ট্রি পৃষ্ঠায় যান
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

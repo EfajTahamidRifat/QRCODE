@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}শিক্ষক ড্যাশবোর্ড{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-chalkboard-teacher mr-3"></i>শিক্ষক ড্যাশবোর্ড
+                </h1>
+                <p class="text-gray-300">স্বাগতম, {{ current_user.name }} স্যার</p>
+            </div>
+            <div class="flex space-x-4">
+                <span class="px-4 py-2 bg-gold/20 rounded-full text-gold text-sm">
+                    <i class="fas fa-check-circle mr-2"></i>আজ {{ today_attendance }} জন উপস্থিত
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assigned Classes -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {% for class_level in assigned_classes %}
+        <div class="glass-morphism rounded-2xl p-6 hover-3d">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold">{{ class_level }}ম শ্রেণী</h3>
+                <span class="px-3 py-1 bg-gold/20 rounded-full text-xs">অর্পিত</span>
+            </div>
+            <p class="text-gray-400 text-sm mb-4">
+                <i class="fas fa-user-graduate mr-2"></i>শিক্ষার্থী: {{ class_students_count[class_level]|default(0) }} জন
+            </p>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('attendance_scan') }}?class={{ class_level }}" 
+                   class="flex-1 btn-3d text-sm text-center">
+                    <i class="fas fa-qrcode mr-2"></i>উপস্থিতি
+                </a>
+                <a href="{{ url_for('attendance_reports') }}?class={{ class_level }}" 
+                   class="flex-1 bg-deepBlue/50 text-white px-4 py-2 rounded-lg text-sm text-center hover:bg-deepBlue transition">
+                    <i class="fas fa-chart-line mr-2"></i>রিপোর্ট
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-full text-center py-12 glass-morphism rounded-2xl">
+            <i class="fas fa-exclamation-circle text-5xl text-gold mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">কোনো শ্রেণী অর্পিত হয়নি</h3>
+            <p class="text-gray-400">এডমিন আপনার জন্য শ্রেণী অ্যাসাইন করেননি।</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="glass-morphism rounded-2xl p-6">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+            <i class="fas fa-history text-gold mr-3"></i>আজকের আপনার নেয়া উপস্থিতি
+        </h2>
+        <div class="overflow-x-auto">
+            <table class="glass-table w-full">
+                <thead>
+                    <tr>
+                        <th>সময়</th>
+                        <th>শিক্ষার্থী</th>
+                        <th>শ্রেণী</th>
+                        <th>রোল</th>
+                        <th>পদ্ধতি</th>
+                    </tr>
+                </thead>
+                <tbody id="today-attendance-table">
+                    <!-- Filled by JavaScript from API -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{{ url_for("today_attendance_api") }}')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('today-attendance-table');
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-8">আজকের কোনো উপস্থিতি নেই</td></tr>';
+            } else {
+                data.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.time}</td>
+                        <td>${record.student_name}</td>
+                        <td>${record.class}ম</td>
+                        <td>${record.roll}</td>
+                        <td><span class="px-2 py-1 bg-gold/20 rounded-full text-xs">${record.method}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        });
+});
+</script>
+{% endblock %}

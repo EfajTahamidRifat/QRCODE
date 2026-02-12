@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}অভিভাবক ড্যাশবোর্ড{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-home mr-3"></i>অভিভাবক ড্যাশবোর্ড
+                </h1>
+                <p class="text-gray-300">স্বাগতম, {{ parent.name or parent.phone }}</p>
+            </div>
+            <div class="flex space-x-4">
+                <a href="{{ url_for('parent_change_password') }}" class="btn-3d text-sm">
+                    <i class="fas fa-key mr-2"></i>পাসওয়ার্ড পরিবর্তন
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for student in parent.children %}
+        <a href="{{ url_for('parent_child_view', student_id=student.id) }}" class="hover-3d">
+            <div class="glass-morphism rounded-2xl p-6 h-full">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-user-graduate text-3xl text-royal"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">{{ student.name }}</h3>
+                        <p class="text-sm text-gray-400">{{ student.class_level }}ম শ্রেণী, রোল {{ student.roll }}</p>
+                    </div>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <p><span class="text-gold">UID:</span> {{ student.uid }}</p>
+                    <p><span class="text-gold">পিতা:</span> {{ student.father_name }}</p>
+                    <p><span class="text-gold">মাতা:</span> {{ student.mother_name or '—' }}</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-700 text-center">
+                    <span class="inline-block px-4 py-2 bg-gold/20 text-gold rounded-full text-sm">
+                        <i class="fas fa-arrow-right mr-1"></i>বিস্তারিত দেখুন
+                    </span>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div class="col-span-full text-center py-12 glass-morphism rounded-2xl">
+            <i class="fas fa-child text-5xl text-gold mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">কোনো শিক্ষার্থী নেই</h3>
+            <p class="text-gray-400">আপনার সাথে কোনো শিক্ষার্থী সংযুক্ত নয়।</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

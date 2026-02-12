@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>মার্কশিট - {{ student.name }}</title>
+    <style>
+        body {
+            font-family: 'Kalpurush', 'Noto Sans Bengali', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: white;
+            color: black;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0c2461;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #1e3799;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .marks-table th {
+            background: #0c2461;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .marks-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .summary {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 16px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .grade {
+            font-weight: bold;
+            color: #0c2461;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">ভরিলহাট নেছারিয়া দাখিল মাদ্রাসা</div>
+        <div class="subtitle">দেওড়া, ফরিদপুর, ঢাকা</div>
+        <div style="margin-top: 10px;">পরীক্ষার ফলাফল - {{ exam.name }} {{ exam.year }}</div>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td width="50%"><strong>শিক্ষার্থীর নাম</strong></td>
+            <td>{{ student.name }}</td>
+        </tr>
+        <tr>
+            <td><strong>পিতার নাম</strong></td>
+            <td>{{ student.father_name }}</td>
+        </tr>
+        <tr>
+            <td><strong>শ্রেণী / রোল</strong></td>
+            <td>{{ student.class_level }}ম / {{ student.roll }}</td>
+        </tr>
+        <tr>
+            <td><strong>UID</strong></td>
+            <td>{{ student.uid }}</td>
+        </tr>
+    </table>
+
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th>বিষয়</th>
+                <th>পূর্ণ নম্বর</th>
+                <th>প্রাপ্ত নম্বর</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subj, marks in result.subject_marks.items() %}
+            <tr>
+                <td>{{ subj }}</td>
+                <td>১০০</td>
+                <td>{{ "%.0f"|format(marks) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="summary">
+        <p><strong>মোট নম্বর:</strong> {{ result.total_marks }}</p>
+        <p><strong>প্রাপ্ত নম্বর:</strong> {{ "%.0f"|format(result.obtained_marks) }}</p>
+        <p><strong>শতাংশ:</strong> {{ "%.2f"|format(result.percentage) }}%</p>
+        <p><strong>গ্রেড:</strong> <span class="grade">{{ result.grade }}</span></p>
+    </div>
+
+    <div class="footer">
+        এই ফলাফলটি স্বয়ংক্রিয়ভাবে তৈরি এবং ইলেকট্রনিকভাবে বৈধ।<br>
+        ডাউনলোডের সময়: {{ now.strftime('%d/%m/%Y %I:%M %p') }}
+    </div>
+</body>
+</html>

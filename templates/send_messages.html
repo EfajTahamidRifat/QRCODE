@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}বার্তা প্রেরণ{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="glass-morphism rounded-2xl p-8 mb-8">
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                    <i class="fas fa-sms text-3xl text-royal"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text">বার্তা প্রেরণ</h1>
+                    <p class="text-gray-300">অভিভাবকদের মোবাইলে SMS পাঠান</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-morphism rounded-2xl p-8">
+            <form method="POST" action="{{ url_for('send_messages') }}" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-bullseye mr-2 text-gold"></i>প্রেরণের ধরণ
+                    </label>
+                    <select name="target_type" id="targetType" onchange="toggleTargetValue()" class="glass-input w-full">
+                        <option value="institute">পুরো প্রতিষ্ঠান</option>
+                        <option value="class">নির্দিষ্ট শ্রেণী</option>
+                        <option value="individual">নির্দিষ্ট শিক্ষার্থী</option>
+                    </select>
+                </div>
+
+                <div id="classSelect" class="hidden">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">শ্রেণী নির্বাচন</label>
+                    <select name="target_value" class="glass-input w-full">
+                        {% for c in range(1,13) %}
+                        <option value="{{ c }}">{{ c }}ম শ্রেণী</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="studentSelect" class="hidden">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">শিক্ষার্থী নির্বাচন</label>
+                    <select name="target_value" class="glass-input w-full">
+                        {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.name }} ({{ student.class_level }}ম, রোল {{ student.roll }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-comment mr-2 text-gold"></i>বার্তা লিখুন
+                    </label>
+                    <textarea name="message" rows="6" required
+                              class="glass-input w-full"
+                              placeholder="আপনার বার্তা এখানে লিখুন..."></textarea>
+                    <p class="text-xs text-gray-400 mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        সর্বোচ্চ ১০০০ অক্ষর। প্রতি SMS ১৬০ অক্ষরের বেশি হলে ভাগ হয়ে যাবে।
+                    </p>
+                </div>
+
+                <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                    <p class="text-sm text-yellow-400 flex items-start">
+                        <i class="fas fa-exclamation-triangle mr-2 mt-1"></i>
+                        নিশ্চিত হয়ে বার্তা পাঠান। প্রতিটি বার্তার জন্য অপারেটর চার্জ প্রযোজ্য।
+                    </p>
+                </div>
+
+                <button type="submit" class="btn-3d w-full">
+                    <i class="fas fa-paper-plane mr-2"></i>বার্তা পাঠান
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleTargetValue() {
+    const type = document.getElementById('targetType').value;
+    document.getElementById('classSelect').classList.add('hidden');
+    document.getElementById('studentSelect').classList.add('hidden');
+    if (type === 'class') {
+        document.getElementById('classSelect').classList.remove('hidden');
+    } else if (type === 'individual') {
+        document.getElementById('studentSelect').classList.remove('hidden');
+    }
+}
+</script>
+{% endblock %}

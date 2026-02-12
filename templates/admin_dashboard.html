@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}এডমিন ড্যাশবোর্ড{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-tachometer-alt mr-3"></i>এডমিন ড্যাশবোর্ড
+                </h1>
+                <p class="text-gray-300">স্বাগতম, {{ current_user.name }} স্যার</p>
+            </div>
+            <div class="flex space-x-4">
+                <a href="{{ url_for('attendance_reports') }}" class="btn-3d text-sm">
+                    <i class="fas fa-chart-bar mr-2"></i>আজকের রিপোর্ট
+                </a>
+                <a href="{{ url_for('system_settings') }}" class="btn-3d text-sm">
+                    <i class="fas fa-sliders-h mr-2"></i>সেটিংস
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid md:grid-cols-4 gap-6 mb-8">
+        <div class="glass-morphism rounded-2xl p-6 hover-3d">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-sm">মোট শিক্ষার্থী</p>
+                    <h3 class="text-3xl font-bold text-white">{{ total_students }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                    <i class="fas fa-users text-2xl text-royal"></i>
+                </div>
+            </div>
+            <a href="{{ url_for('manage_students') }}" class="text-sm text-gold hover:underline mt-4 block">
+                <i class="fas fa-arrow-right mr-1"></i>ব্যবস্থাপনা
+            </a>
+        </div>
+
+        <div class="glass-morphism rounded-2xl p-6 hover-3d">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-sm">মোট শিক্ষক</p>
+                    <h3 class="text-3xl font-bold text-white">{{ total_teachers }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                    <i class="fas fa-chalkboard-teacher text-2xl text-royal"></i>
+                </div>
+            </div>
+            <a href="{{ url_for('manage_teachers') }}" class="text-sm text-gold hover:underline mt-4 block">
+                <i class="fas fa-arrow-right mr-1"></i>ব্যবস্থাপনা
+            </a>
+        </div>
+
+        <div class="glass-morphism rounded-2xl p-6 hover-3d">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-sm">আজকের উপস্থিতি</p>
+                    <h3 class="text-3xl font-bold text-white">{{ today_attendance }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-2xl text-royal"></i>
+                </div>
+            </div>
+            <a href="{{ url_for('attendance_reports') }}" class="text-sm text-gold hover:underline mt-4 block">
+                <i class="fas fa-arrow-right mr-1"></i>বিস্তারিত
+            </a>
+        </div>
+
+        <div class="glass-morphism rounded-2xl p-6 hover-3d">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-sm">সক্রিয় পরীক্ষা</p>
+                    <h3 class="text-3xl font-bold text-white">{{ active_exams_count|default(0) }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                    <i class="fas fa-file-alt text-2xl text-royal"></i>
+                </div>
+            </div>
+            <a href="{{ url_for('manage_exams') }}" class="text-sm text-gold hover:underline mt-4 block">
+                <i class="fas fa-arrow-right mr-1"></i>পরীক্ষা সমূহ
+            </a>
+        </div>
+    </div>
+
+    <!-- Attendance by Class -->
+    <div class="glass-morphism rounded-2xl p-6 mb-8">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+            <i class="fas fa-chart-pie text-gold mr-3"></i>আজকের শ্রেণীভিত্তিক উপস্থিতি
+        </h2>
+        <div class="overflow-x-auto">
+            <table class="glass-table w-full">
+                <thead>
+                    <tr>
+                        <th>শ্রেণী</th>
+                        <th>উপস্থিত শিক্ষার্থী</th>
+                        <th>অনুপস্থিত</th>
+                        <th>মোট</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class_level, present_count in attendance_by_class %}
+                    {% set total = class_totals[class_level] if class_totals else 0 %}
+                    {% set absent = total - present_count %}
+                    <tr>
+                        <td>{{ class_level }}ম শ্রেণী</td>
+                        <td class="text-gold font-bold">{{ present_count }}</td>
+                        <td>{{ absent }}</td>
+                        <td>{{ total }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-gray-400 py-8">
+                            <i class="fas fa-info-circle mr-2"></i>আজ কোনো উপস্থিতি নেই
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="feature-card text-center">
+            <i class="fas fa-qrcode text-4xl text-gold mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">কিউআর কোড জেনারেট</h3>
+            <p class="text-gray-400 text-sm mb-4">শিক্ষার্থীদের জন্য নতুন QR কোড তৈরি</p>
+            <a href="{{ url_for('manage_students') }}" class="inline-block text-gold hover:underline">এখনই করুন</a>
+        </div>
+        <div class="feature-card text-center">
+            <i class="fas fa-sms text-4xl text-gold mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">বার্তা প্রেরণ</h3>
+            <p class="text-gray-400 text-sm mb-4">অভিভাবকদের নোটিফিকেশন পাঠান</p>
+            <a href="{{ url_for('send_messages') }}" class="inline-block text-gold hover:underline">বার্তা লিখুন</a>
+        </div>
+        <div class="feature-card text-center">
+            <i class="fas fa-id-card text-4xl text-gold mb-4"></i>
+            <h3 class="text-lg font-bold mb-2">আইডি কার্ড</h3>
+            <p class="text-gray-400 text-sm mb-4">শিক্ষার্থীদের ডিজিটাল আইডি কার্ড</p>
+            <a href="{{ url_for('manage_students') }}" class="inline-block text-gold hover:underline">তৈরি করুন</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

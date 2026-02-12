@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }} - বিস্তারিত{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="glass-morphism rounded-2xl p-8 mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                        <i class="fas fa-user-graduate text-3xl text-royal"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold gradient-text">{{ student.name }}</h1>
+                        <p class="text-gray-300">{{ student.class_level }}ম শ্রেণী, রোল {{ student.roll }} | UID: {{ student.uid }}</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('parent_dashboard') }}" class="text-gold hover:underline">
+                    <i class="fas fa-arrow-left mr-1"></i>ড্যাশবোর্ড
+                </a>
+            </div>
+        </div>
+
+        <!-- Student Details -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="glass-morphism rounded-2xl p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-id-card text-gold mr-3"></i>ব্যক্তিগত তথ্য
+                </h2>
+                <div class="space-y-3">
+                    <p><span class="text-gold">পিতার নাম:</span> {{ student.father_name }}</p>
+                    <p><span class="text-gold">মাতার নাম:</span> {{ student.mother_name or '—' }}</p>
+                    <p><span class="text-gold">জন্ম তারিখ:</span> {{ student.birth_date.strftime('%d/%m/%Y') if student.birth_date else '—' }}</p>
+                    <p><span class="text-gold">ব্লাড গ্রুপ:</span> {{ student.blood_group or '—' }}</p>
+                    <p><span class="text-gold">ঠিকানা:</span> {{ student.address or '—' }}</p>
+                </div>
+            </div>
+
+            <div class="glass-morphism rounded-2xl p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-qrcode text-gold mr-3"></i>আইডি কার্ড
+                </h2>
+                {% if student.id_card_token %}
+                <div class="space-y-4">
+                    <p class="text-green-400">
+                        <i class="fas fa-check-circle mr-2"></i>আইডি কার্ড প্রস্তুত
+                    </p>
+                    <a href="{{ url_for('download_id_card', token=student.id_card_token) }}" 
+                       class="btn-3d w-full inline-block text-center">
+                        <i class="fas fa-download mr-2"></i>ডাউনলোড
+                    </a>
+                </div>
+                {% else %}
+                <p class="text-gray-400">এখনও আইডি কার্ড জেনারেট করা হয়নি।</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Attendance Records -->
+        <div class="glass-morphism rounded-2xl p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-calendar-alt text-gold mr-3"></i>উপস্থিতির ইতিহাস
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="glass-table w-full">
+                    <thead>
+                        <tr>
+                            <th>তারিখ</th>
+                            <th>প্রবেশ সময়</th>
+                            <th>প্রস্থান</th>
+                            <th>অবস্থা</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for att in attendance %}
+                        <tr>
+                            <td>{{ att.date.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ att.check_in_time.strftime('%I:%M %p') }}</td>
+                            <td>{{ att.check_out_time.strftime('%I:%M %p') if att.check_out_time else '—' }}</td>
+                            <td>
+                                <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">উপস্থিত</span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center py-8 text-gray-400">
+                                <i class="fas fa-calendar-times text-3xl mb-2"></i><br>
+                                কোনো উপস্থিতির তথ্য নেই
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="glass-morphism rounded-2xl p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-star text-gold mr-3"></i>প্রকাশিত ফলাফল
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                {% for res in results %}
+                <div class="bg-royal/30 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold">{{ res.exam.name }} {{ res.exam.year }}</h3>
+                            <p class="text-sm text-gray-400">প্রকাশিত: {{ res.published_at.strftime('%d/%m/%Y') }}</p>
+                        </div>
+                        <span class="px-3 py-1 bg-gold/20 text-gold rounded-full text-sm">{{ res.grade }}</span>
+                    </div>
+                    <div class="mt-3 flex justify-between">
+                        <span>প্রাপ্ত নম্বর: {{ "%.0f"|format(res.obtained_marks) }}/{{ res.total_marks }}</span>
+                        <span>শতাংশ: {{ "%.1f"|format(res.percentage) }}%</span>
+                    </div>
+                    <a href="{{ url_for('view_marksheet', token=res.download_token) }}" 
+                       class="mt-3 inline-block text-gold text-sm hover:underline">
+                        <i class="fas fa-download mr-1"></i>মার্কশিট
+                    </a>
+                </div>
+                {% else %}
+                <div class="col-span-2 text-center py-8 text-gray-400">
+                    <i class="fas fa-file-alt text-3xl mb-2"></i><br>
+                    এখনও কোনো ফলাফল প্রকাশিত হয়নি
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

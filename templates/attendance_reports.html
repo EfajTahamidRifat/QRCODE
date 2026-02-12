@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}উপস্থিতি রিপোর্ট{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-chart-bar mr-3"></i>উপস্থিতি রিপোর্ট
+                </h1>
+                <p class="text-gray-300">{{ report_date.strftime('%d %B, %Y') }} তারিখের রিপোর্ট</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex space-x-3">
+                <form method="GET" class="flex space-x-2">
+                    <input type="date" name="date" value="{{ report_date.strftime('%Y-%m-%d') }}"
+                           class="glass-input">
+                    <select name="class" class="glass-input">
+                        <option value="all">সব শ্রেণী</option>
+                        {% for c in range(1,13) %}
+                        <option value="{{ c }}" {% if class_filter|int == c %}selected{% endif %}>{{ c }}ম</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn-3d">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Present Students -->
+        <div class="glass-morphism rounded-2xl p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center text-green-400">
+                <i class="fas fa-check-circle mr-3"></i>উপস্থিত ({{ attendance_records|length }})
+            </h2>
+            <div class="overflow-y-auto max-h-96">
+                <table class="glass-table w-full">
+                    <thead>
+                        <tr>
+                            <th>নাম</th>
+                            <th>শ্রেণী</th>
+                            <th>রোল</th>
+                            <th>সময়</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student, attendance in attendance_records %}
+                        <tr>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.class_level }}ম</td>
+                            <td>{{ student.roll }}</td>
+                            <td>{{ attendance.check_in_time.strftime('%I:%M %p') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Absent Students -->
+        <div class="glass-morphism rounded-2xl p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center text-red-400">
+                <i class="fas fa-times-circle mr-3"></i>অনুপস্থিত ({{ absent_students|length }})
+            </h2>
+            <div class="overflow-y-auto max-h-96">
+                <table class="glass-table w-full">
+                    <thead>
+                        <tr>
+                            <th>নাম</th>
+                            <th>শ্রেণী</th>
+                            <th>রোল</th>
+                            <th>পিতার মোবাইল</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in absent_students %}
+                        <tr>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.class_level }}ম</td>
+                            <td>{{ student.roll }}</td>
+                            <td>{{ student.father_phone }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="glass-morphism rounded-2xl p-6 mt-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+                <p class="text-gray-400 text-sm">মোট শিক্ষার্থী</p>
+                <h3 class="text-2xl font-bold">{{ attendance_records|length + absent_students|length }}</h3>
+            </div>
+            <div>
+                <p class="text-gray-400 text-sm">উপস্থিত</p>
+                <h3 class="text-2xl font-bold text-green-400">{{ attendance_records|length }}</h3>
+            </div>
+            <div>
+                <p class="text-gray-400 text-sm">অনুপস্থিত</p>
+                <h3 class="text-2xl font-bold text-red-400">{{ absent_students|length }}</h3>
+            </div>
+            <div>
+                <p class="text-gray-400 text-sm">উপস্থিতির হার</p>
+                <h3 class="text-2xl font-bold text-gold">
+                    {% set total = attendance_records|length + absent_students|length %}
+                    {% if total > 0 %}
+                        {{ "%.1f"|format(attendance_records|length / total * 100) }}%
+                    {% else %}0%{% endif %}
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

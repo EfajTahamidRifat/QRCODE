@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}পরীক্ষা ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-file-alt mr-3"></i>পরীক্ষা ব্যবস্থাপনা
+                </h1>
+                <p class="text-gray-300">মোট পরীক্ষা: {{ exams|length }}</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <button onclick="toggleAddExamForm()" class="btn-3d">
+                    <i class="fas fa-plus-circle mr-2"></i>নতুন পরীক্ষা
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Exam Form -->
+    <div id="addExamForm" class="glass-morphism rounded-2xl p-8 mb-8 hidden">
+        <h2 class="text-xl font-bold mb-6 flex items-center">
+            <i class="fas fa-plus-circle text-gold mr-3"></i>নতুন পরীক্ষা যুক্ত করুন
+        </h2>
+        <form method="POST" class="grid md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">পরীক্ষার নাম *</label>
+                <input type="text" name="name" required class="glass-input w-full" placeholder="যেমন: অর্ধ-বার্ষিক">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">বছর *</label>
+                <input type="number" name="year" value="{{ get_bangladesh_time().year }}" required class="glass-input w-full">
+            </div>
+            <div class="md:col-span-2 flex space-x-4">
+                <button type="submit" class="btn-3d px-8">
+                    <i class="fas fa-save mr-2"></i>সংরক্ষণ
+                </button>
+                <button type="button" onclick="toggleAddExamForm()" class="px-8 bg-gray-600/50 rounded-lg hover:bg-gray-600">
+                    বাতিল
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Exams List -->
+    <div class="glass-morphism rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="glass-table w-full">
+                <thead>
+                    <tr>
+                        <th>পরীক্ষার নাম</th>
+                        <th>বছর</th>
+                        <th>অবস্থা</th>
+                        <th>তৈরির তারিখ</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in exams %}
+                    <tr>
+                        <td class="font-bold">{{ exam.name }}</td>
+                        <td>{{ exam.year }}</td>
+                        <td>
+                            {% if exam.is_active %}
+                            <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">সক্রিয়</span>
+                            {% else %}
+                            <span class="px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs">নিষ্ক্রিয়</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ exam.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('result_entry') }}?exam_id={{ exam.id }}" 
+                               class="px-3 py-1 bg-gold/20 text-gold rounded-lg text-sm hover:bg-gold/30">
+                                <i class="fas fa-edit"></i> ফলাফল
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-12 text-gray-400">
+                            <i class="fas fa-folder-open text-4xl mb-3"></i>
+                            <p>কোনো পরীক্ষা যোগ করা হয়নি</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleAddExamForm() {
+    const form = document.getElementById('addExamForm');
+    form.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}সিস্টেম সেটিংস{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="glass-morphism rounded-2xl p-8 mb-8">
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-r from-gold to-warmOrange flex items-center justify-center">
+                    <i class="fas fa-sliders-h text-3xl text-royal"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text">সিস্টেম সেটিংস</h1>
+                    <p class="text-gray-300">এডমিন প্যানেল কনফিগারেশন</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Attendance System Toggle -->
+            <div class="glass-morphism rounded-2xl p-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-qrcode text-gold mr-3"></i>উপস্থিতি ব্যবস্থা
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">বর্তমান অবস্থা:</span>
+                        {% if attendance_active %}
+                        <span class="px-4 py-2 bg-green-500/20 text-green-400 rounded-full">
+                            <i class="fas fa-play mr-2"></i>সক্রিয়
+                        </span>
+                        {% else %}
+                        <span class="px-4 py-2 bg-red-500/20 text-red-400 rounded-full">
+                            <i class="fas fa-stop mr-2"></i>নিষ্ক্রিয়
+                        </span>
+                        {% endif %}
+                    </div>
+                    <form method="POST" class="flex space-x-3">
+                        <input type="hidden" name="attendance_system" value="start">
+                        <button type="submit" {% if attendance_active %}disabled{% endif %}
+                                class="btn-3d flex-1 {% if attendance_active %}opacity-50 cursor-not-allowed{% endif %}">
+                            <i class="fas fa-play mr-2"></i>শুরু
+                        </button>
+                    </form>
+                    <form method="POST">
+                        <input type="hidden" name="attendance_system" value="stop">
+                        <button type="submit" {% if not attendance_active %}disabled{% endif %}
+                                class="w-full bg-red-500/20 text-red-400 px-6 py-3 rounded-lg hover:bg-red-500/30 transition {% if not attendance_active %}opacity-50 cursor-not-allowed{% endif %}">
+                            <i class="fas fa-stop mr-2"></i>বন্ধ
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Other Settings Placeholder -->
+            <div class="glass-morphism rounded-2xl p-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-cog text-gold mr-3"></i>অন্যান্য সেটিংস
+                </h2>
+                <p class="text-gray-400 text-center py-8">
+                    <i class="fas fa-tools text-4xl mb-4"></i><br>
+                    অন্যান্য কনফিগারেশন শীঘ্রই যোগ হবে
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

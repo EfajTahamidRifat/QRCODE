@@ -1,0 +1,15 @@
+Flask==2.3.3
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-SocketIO==5.3.6
+Flask-CORS==4.0.1
+Werkzeug==2.3.8
+qrcode==7.4.2
+Pillow==10.2.0
+requests==2.31.0
+PyJWT==2.8.0
+pytz==2024.1
+SQLAlchemy==2.0.29
+python-dotenv==1.0.1
+# Optional but recommended for PDF generation:
+WeasyPrint==60.2

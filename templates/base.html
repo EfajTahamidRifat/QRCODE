@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ভরিলহাট নেছারিয়া দাখিল মাদ্রাসা - স্মার্ট উপস্থিতি ব্যবস্থাপনা{% endblock %}</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kalpurush&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS – Premium Brown & Gold Palette -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Kalpurush', 'Noto Sans Bengali', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #3A281A 0%, #6B4E3A 100%);
+            min-height: 100vh;
+            color: #fff;
+            direction: ltr;
+        }
+
+        /* ----- Premium Brown & Gold Color Classes ----- */
+        .bg-royal { background-color: #3A281A; }       /* deep brown */
+        .bg-deepBlue { background-color: #6B4E3A; }    /* medium brown */
+        .bg-gold { background-color: #D4AF37; }        /* classic gold */
+        .bg-warmOrange { background-color: #E6B800; }  /* bright gold */
+
+        .text-royal { color: #3A281A; }
+        .text-deepBlue { color: #6B4E3A; }
+        .text-gold { color: #D4AF37; }
+        .text-warmOrange { color: #E6B800; }
+
+        /* ----- Premium Gradients ----- */
+        .bg-gradient-premium {
+            background: linear-gradient(135deg, #D4AF37 0%, #E6B800 100%);
+        }
+        .bg-gradient-brown {
+            background: linear-gradient(135deg, #3A281A 0%, #6B4E3A 100%);
+        }
+        .bg-gradient-brown-50 {
+            background: linear-gradient(135deg, rgba(58,40,26,0.5), rgba(107,78,58,0.5));
+        }
+        .bg-gradient-teacher {
+            background: linear-gradient(135deg, #8B5A2B 0%, #5D3A1A 100%);
+        }
+
+        /* ----- Glassmorphism & UI Elements ----- */
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-3d {
+            background: linear-gradient(135deg, #D4AF37 0%, #E6B800 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: #3A281A;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 0 #8B5A2B, 0 8px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            top: 0;
+            font-family: 'Kalpurush', sans-serif;
+        }
+        .btn-3d:hover { 
+            top: 2px; 
+            box-shadow: 0 4px 0 #8B5A2B, 0 6px 20px rgba(0,0,0,0.4); 
+            background: linear-gradient(135deg, #C9A84B 0%, #DAA520 100%);
+        }
+        .btn-3d:active { 
+            top: 6px; 
+            box-shadow: 0 0 0 #8B5A2B, 0 2px 10px rgba(0,0,0,0.3); 
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #D4AF37 0%, #E6B800 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hover-3d {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .hover-3d:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 16px;
+            font-family: 'Kalpurush', sans-serif;
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .glass-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+
+        .quran-verse {
+            background: linear-gradient(135deg, rgba(58,40,26,0.85), rgba(107,78,58,0.85));
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px auto;
+            max-width: 800px;
+            text-align: center;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        .arabic-text {
+            font-family: 'Traditional Arabic', 'Amiri', serif;
+            font-size: 28px;
+            line-height: 1.8;
+            color: #D4AF37;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+        }
+        .bangla-text {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .english-text {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(58, 40, 26, 0.5); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(135deg, #D4AF37, #E6B800); 
+            border-radius: 5px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: linear-gradient(135deg, #C9A84B, #DAA520); 
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 10px 20px;
+            color: rgba(255, 255, 255, 0.85);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .nav-link:hover { color: #D4AF37; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #D4AF37, #E6B800);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after { width: 80%; }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #B76E79, #9E4244);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #D4AF37;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Alert styles – kept modern but with subtle gold accent */
+        .alert-success { background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(46, 125, 50, 0.9)); border-left: 4px solid #4CAF50; }
+        .alert-error { background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(198, 40, 40, 0.9)); border-left: 4px solid #F44336; }
+        .alert-warning { background: linear-gradient(135deg, rgba(255, 193, 7, 0.9), rgba(255, 160, 0, 0.9)); border-left: 4px solid #FFC107; }
+        .alert-info { background: linear-gradient(135deg, rgba(33, 150, 243, 0.9), rgba(21, 101, 192, 0.9)); border-left: 4px solid #2196F3; }
+
+        .glass-table {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .glass-table thead { 
+            background: linear-gradient(135deg, rgba(58,40,26,0.9), rgba(107,78,58,0.9)); 
+        }
+        .glass-table th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #D4AF37;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+        .glass-table td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-table tbody tr:hover { background: rgba(212, 175, 55, 0.05); }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .feature-card:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(230, 184, 0, 0.05));
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .memorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background: rgba(26, 18, 12, 0.97);
+            backdrop-filter: blur(12px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        .memorial-overlay.active { display: flex; }
+        .memorial-iframe-container {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            max-height: 800px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+            position: relative;
+        }
+        .memorial-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 20px;
+        }
+        .memorial-overlay-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(212, 175, 55, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+        }
+        .memorial-overlay-close:hover {
+            background: rgba(212, 175, 55, 0.4);
+            transform: scale(1.1);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #6B4E3A, #3A281A);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+            border-left: 4px solid #D4AF37;
+        }
+        .toast-success { background: linear-gradient(135deg, #2E7D32, #1B5E20); border-left-color: #D4AF37; }
+        .toast-error { background: linear-gradient(135deg, #C62828, #8E0000); border-left-color: #D4AF37; }
+        .toast-warning { background: linear-gradient(135deg, #FF8F00, #FF6F00); border-left-color: #D4AF37; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #D4AF37, #E6B800);
+            transition: width 0.3s ease;
+        }
+
+        body.memorial-active { overflow: hidden; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .arabic-text { font-size: 24px; }
+            .bangla-text { font-size: 18px; }
+            .quran-verse { padding: 20px; margin: 20px auto; }
+            .btn-3d { padding: 10px 20px; font-size: 14px; }
+        }
+        @media (max-width: 480px) {
+            .arabic-text { font-size: 20px; }
+            .bangla-text { font-size: 16px; }
+            .quran-verse { padding: 15px; margin: 15px auto; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Flash Messages (unchanged logic) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-4 right-4 z-50 space-y-2">
+                {% for category, message in messages %}
+                    <div class="toast {% if category == 'success' %}toast-success{% elif category == 'error' %}toast-error{% elif category == 'warning' %}toast-warning{% endif %}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Navigation -->
+    <nav class="glass-morphism sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo - Premium brown & gold gradient -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-premium flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold gradient-text">ভরিলহাট নেছারিয়া দাখিল মাদ্রাসা</h1>
+                        <p class="text-sm text-gray-300">স্মার্ট উপস্থিতি ব্যবস্থাপনা</p>
+                    </div>
+                </div>
+
+                <!-- Live Clock -->
+                <div id="liveClock" class="hidden md:flex items-center text-sm text-gold">
+                    <i class="fas fa-clock mr-2"></i> লোড হচ্ছে...
+                </div>
+
+                <!-- Navigation Links (same logic, updated colors via classes) -->
+                <div class="hidden md:flex items-center space-x-2">
+                    <a href="{{ url_for('index') }}" class="nav-link">
+                        <i class="fas fa-home mr-2"></i>হোম
+                    </a>
+
+                    {% if 'parent_id' in session %}
+                        {# Parent is logged in #}
+                        <a href="{{ url_for('parent_dashboard') }}" class="nav-link">
+                            <i class="fas fa-tachometer-alt mr-2"></i>ড্যাশবোর্ড
+                        </a>
+                        <a href="{{ url_for('parent_logout') }}" class="btn-3d text-sm">
+                            <i class="fas fa-sign-out-alt mr-2"></i>লগআউট
+                        </a>
+                    {% elif current_user.is_authenticated %}
+                        {# Admin or Teacher logged in via Flask-Login #}
+                        <a href="{{ url_for('dashboard') }}" class="nav-link">
+                            <i class="fas fa-tachometer-alt mr-2"></i>ড্যাশবোর্ড
+                        </a>
+
+                        {% if current_user.role == 'teacher' %}
+                            <a href="{{ url_for('attendance_scan') }}" class="nav-link">
+                                <i class="fas fa-qrcode mr-2"></i>উপস্থিতি স্ক্যান
+                            </a>
+                        {% endif %}
+
+                        {% if current_user.role == 'admin' %}
+                            <div class="relative group">
+                                <button class="nav-link flex items-center">
+                                    <i class="fas fa-cog mr-2"></i>এডমিন
+                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                </button>
+                                <div class="absolute right-0 mt-2 w-48 glass-morphism rounded-lg py-2 invisible group-hover:visible transition-all duration-300">
+                                    <a href="{{ url_for('manage_students') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-users mr-2"></i>শিক্ষার্থী
+                                    </a>
+                                    <a href="{{ url_for('manage_teachers') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-chalkboard-teacher mr-2"></i>শিক্ষক
+                                    </a>
+                                    <a href="{{ url_for('send_messages') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-sms mr-2"></i>বার্তা প্রেরণ
+                                    </a>
+                                    <a href="{{ url_for('attendance_reports') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-chart-bar mr-2"></i>রিপোর্ট
+                                    </a>
+                                    <a href="{{ url_for('manage_exams') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-file-alt mr-2"></i>পরীক্ষা
+                                    </a>
+                                    <a href="{{ url_for('result_entry') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-edit mr-2"></i>ফলাফল এন্ট্রি
+                                    </a>
+                                    <a href="{{ url_for('system_settings') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-sliders-h mr-2"></i>সেটিংস
+                                    </a>
+                                    <a href="{{ url_for('audit_logs') }}" class="block px-4 py-2 hover:bg-gold/10">
+                                        <i class="fas fa-history mr-2"></i>অডিট লগ
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="relative">
+                            <button class="nav-link flex items-center">
+                                <i class="fas fa-user-circle mr-2"></i>
+                                {{ current_user.name }}
+                                {% if current_user.role == 'admin' %}
+                                    <span class="ml-2 px-2 py-1 bg-gradient-premium text-xs rounded-full text-royal">এডমিন</span>
+                                {% else %}
+                                    <span class="ml-2 px-2 py-1 bg-gradient-teacher text-xs rounded-full text-white">শিক্ষক</span>
+                                {% endif %}
+                            </button>
+                        </div>
+
+                        <a href="{{ url_for('logout') }}" class="btn-3d text-sm">
+                            <i class="fas fa-sign-out-alt mr-2"></i>লগআউট
+                        </a>
+                    {% else %}
+                        {# Not logged in #}
+                        <a href="{{ url_for('check_attendance') }}" class="nav-link">
+                            <i class="fas fa-search mr-2"></i>উপস্থিতি চেক
+                        </a>
+                        <a href="{{ url_for('verify_id_card') }}" class="nav-link">
+                            <i class="fas fa-id-card mr-2"></i>আইডি কার্ড ভেরিফাই
+                        </a>
+                        <a href="{{ url_for('check_result') }}" class="nav-link">
+                            <i class="fas fa-star mr-2"></i>ফলাফল
+                        </a>
+                        <a href="{{ url_for('parent_login') }}" class="nav-link">
+                            <i class="fas fa-user-friends mr-2"></i>অভিভাবক
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn-3d text-sm">
+                            <i class="fas fa-sign-in-alt mr-2"></i>লগইন
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuButton" class="md:hidden text-2xl text-gold">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu (updated gradient classes) -->
+            <div id="mobileMenu" class="md:hidden mt-4 hidden">
+                <div class="space-y-2">
+                    <a href="{{ url_for('index') }}" class="block nav-link"><i class="fas fa-home mr-2"></i>হোম</a>
+                    {% if 'parent_id' in session %}
+                        <a href="{{ url_for('parent_dashboard') }}" class="block nav-link"><i class="fas fa-tachometer-alt mr-2"></i>ড্যাশবোর্ড</a>
+                        <a href="{{ url_for('parent_logout') }}" class="block btn-3d w-full text-center"><i class="fas fa-sign-out-alt mr-2"></i>লগআউট</a>
+                    {% elif current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="block nav-link"><i class="fas fa-tachometer-alt mr-2"></i>ড্যাশবোর্ড</a>
+                        {% if current_user.role == 'teacher' %}
+                            <a href="{{ url_for('attendance_scan') }}" class="block nav-link"><i class="fas fa-qrcode mr-2"></i>উপস্থিতি স্ক্যান</a>
+                        {% endif %}
+                        {% if current_user.role == 'admin' %}
+                            <div class="space-y-2 ml-4">
+                                <a href="{{ url_for('manage_students') }}" class="block nav-link"><i class="fas fa-users mr-2"></i>শিক্ষার্থী</a>
+                                <a href="{{ url_for('manage_teachers') }}" class="block nav-link"><i class="fas fa-chalkboard-teacher mr-2"></i>শিক্ষক</a>
+                                <a href="{{ url_for('send_messages') }}" class="block nav-link"><i class="fas fa-sms mr-2"></i>বার্তা</a>
+                                <a href="{{ url_for('attendance_reports') }}" class="block nav-link"><i class="fas fa-chart-bar mr-2"></i>রিপোর্ট</a>
+                                <a href="{{ url_for('manage_exams') }}" class="block nav-link"><i class="fas fa-file-alt mr-2"></i>পরীক্ষা</a>
+                                <a href="{{ url_for('result_entry') }}" class="block nav-link"><i class="fas fa-edit mr-2"></i>ফলাফল</a>
+                                <a href="{{ url_for('system_settings') }}" class="block nav-link"><i class="fas fa-sliders-h mr-2"></i>সেটিংস</a>
+                                <a href="{{ url_for('audit_logs') }}" class="block nav-link"><i class="fas fa-history mr-2"></i>অডিট</a>
+                            </div>
+                        {% endif %}
+                        <div class="border-t border-gold/30 pt-2">
+                            <div class="nav-link"><i class="fas fa-user-circle mr-2"></i>{{ current_user.name }}</div>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="block btn-3d w-full text-center"><i class="fas fa-sign-out-alt mr-2"></i>লগআউট</a>
+                    {% else %}
+                        <a href="{{ url_for('check_attendance') }}" class="block nav-link"><i class="fas fa-search mr-2"></i>উপস্থিতি চেক</a>
+                        <a href="{{ url_for('verify_id_card') }}" class="block nav-link"><i class="fas fa-id-card mr-2"></i>আইডি কার্ড ভেরিফাই</a>
+                        <a href="{{ url_for('check_result') }}" class="block nav-link"><i class="fas fa-star mr-2"></i>ফলাফল</a>
+                        <a href="{{ url_for('parent_login') }}" class="block nav-link"><i class="fas fa-user-friends mr-2"></i>অভিভাবক</a>
+                        <a href="{{ url_for('login') }}" class="block btn-3d w-full text-center"><i class="fas fa-sign-in-alt mr-2"></i>লগইন</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer – updated with premium brown/gold gradients -->
+    <footer class="glass-morphism mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 gradient-text">ভরিলহাট নেছারিয়া দাখিল মাদ্রাসা</h3>
+                    <p class="text-gray-300 mb-4">আধুনিক প্রযুক্তির সাথে ইসলামী শিক্ষার সমন্বয়। আমরা গড়ে তুলছি যোগ্য নাগরিক ও উত্তম মুসলিম।</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gradient-premium flex items-center justify-center"><i class="fab fa-facebook-f text-royal"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gradient-premium flex items-center justify-center"><i class="fab fa-twitter text-royal"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gradient-premium flex items-center justify-center"><i class="fab fa-youtube text-royal"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-gold">দ্রুত লিংক</h4>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('index') }}" class="text-gray-300 hover:text-gold transition"><i class="fas fa-chevron-right mr-2 text-xs text-gold"></i>হোম পেজ</a></li>
+                        <li><a href="{{ url_for('check_attendance') }}" class="text-gray-300 hover:text-gold transition"><i class="fas fa-chevron-right mr-2 text-xs text-gold"></i>উপস্থিতি চেক</a></li>
+                        <li><a href="{{ url_for('verify_id_card') }}" class="text-gray-300 hover:text-gold transition"><i class="fas fa-chevron-right mr-2 text-xs text-gold"></i>আইডি কার্ড ভেরিফাই</a></li>
+                        <li><a href="{{ url_for('check_result') }}" class="text-gray-300 hover:text-gold transition"><i class="fas fa-chevron-right mr-2 text-xs text-gold"></i>ফলাফল</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-gold">যোগাযোগ</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center"><i class="fas fa-map-marker-alt text-gold mr-3"></i><span class="text-gray-300">দেওড়া, ফরিদপুর, ঢাকা</span></li>
+                        <li class="flex items-center"><i class="fas fa-phone text-gold mr-3"></i><span class="text-gray-300">+৮৮০ ১৭১২-৩৪৫৬৭৮</span></li>
+                        <li class="flex items-center"><i class="fas fa-envelope text-gold mr-3"></i><span class="text-gray-300">info@bhorilhatmadrasha.edu</span></li>
+                        <li class="flex items-center"><i class="fas fa-clock text-gold mr-3"></i><span class="text-gray-300">সকাল ৮:০০ - বিকাল ৫:০০</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-gold">গুরুত্বপূর্ণ নোটিশ</h4>
+                    <div class="bg-gradient-brown-50 rounded-lg p-4 border border-gold/20">
+                        <p class="text-sm text-gray-200"><i class="fas fa-exclamation-circle text-gold mr-2"></i>উপস্থিতি স্ক্যানিং প্রতিদিন সকাল ৮:০০ থেকে ১০:০০ পর্যন্ত।</p>
+                        <p class="text-sm text-gray-200 mt-2"><i class="fas fa-exclamation-circle text-gold mr-2"></i>আইডি কার্ড ডাউনলোডের জন্য অভিভাবকের মোবাইল নম্বর প্রয়োজন।</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gold/20 mt-8 pt-8 text-center">
+                <p class="text-gray-400">&copy; ২০২৪ ভরিলহাট নেছারিয়া দাখিল মাদ্রাসা। সর্বস্বত্ব সংরক্ষিত।</p>
+                <p class="text-gray-500 text-sm mt-2">ডেভেলপড এবং মেইনটেইনড - সফটওয়্যার ডেভেলপমেন্ট টিম</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Full Screen Memorial Overlay (Shows on first visit) -->
+    {% if show_memorial_popup %}
+    <div id="memorialOverlay" class="memorial-overlay">
+        <button id="closeMemorialOverlay" class="memorial-overlay-close">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="memorial-iframe-container">
+            <iframe src="{{ url_for('memorial') }}" 
+                    id="memorialIframe"
+                    class="memorial-iframe"
+                    title="মরহুম মনির হাওলাদার - স্মৃতিচারণ"
+                    allow="fullscreen"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals">
+            </iframe>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- JavaScript (unchanged functionality) -->
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenuButton').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+            this.innerHTML = mobileMenu.classList.contains('hidden') ? 
+                '<i class="fas fa-bars"></i>' : 
+                '<i class="fas fa-times"></i>';
+        });
+
+        // Close flash messages after 5 seconds
+        setTimeout(() => {
+            const flashMessages = document.querySelectorAll('.toast');
+            flashMessages.forEach(message => {
+                message.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => message.remove(), 300);
+            });
+        }, 5000);
+
+        // Real-time clock update (Bangladesh time)
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                timeZone: 'Asia/Dhaka',
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const timeString = now.toLocaleTimeString('bn-BD', options);
+            const dateString = now.toLocaleDateString('bn-BD', { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const clockElement = document.getElementById('liveClock');
+            if (clockElement) {
+                clockElement.innerHTML = `<i class="fas fa-clock mr-2"></i>${timeString} | ${dateString}`;
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Memorial overlay handling
+        {% if show_memorial_popup %}
+        function hasSeenMemorialRecently() {
+            const lastSeen = localStorage.getItem('memorialLastSeen');
+            if (!lastSeen) return false;
+            const now = new Date().getTime();
+            const oneDay = 24 * 60 * 60 * 1000;
+            return (now - lastSeen) < oneDay;
+        }
+
+        setTimeout(() => {
+            if (!hasSeenMemorialRecently()) {
+                document.getElementById('memorialOverlay').classList.add('active');
+                document.body.classList.add('memorial-active');
+                localStorage.setItem('memorialLastSeen', new Date().getTime());
+            }
+        }, 2000);
+
+        document.getElementById('closeMemorialOverlay').addEventListener('click', function() {
+            document.getElementById('memorialOverlay').classList.remove('active');
+            document.body.classList.remove('memorial-active');
+            sessionStorage.setItem('memorialClosed', 'true');
+        });
+        {% endif %}
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

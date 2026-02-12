@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}অডিট লগ{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="glass-morphism rounded-2xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">
+                    <i class="fas fa-history mr-3"></i>অডিট লগ
+                </h1>
+                <p class="text-gray-300">সিস্টেমের সকল কার্যক্রমের ইতিহাস</p>
+            </div>
+            <span class="text-sm text-gray-400">মোট {{ logs.total }} টি লগ</span>
+        </div>
+    </div>
+
+    <div class="glass-morphism rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="glass-table w-full">
+                <thead>
+                    <tr>
+                        <th>সময়</th>
+                        <th>ব্যবহারকারী</th>
+                        <th>কর্ম</th>
+                        <th>বিস্তারিত</th>
+                        <th>আইপি</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs.items %}
+                    <tr>
+                        <td>{{ log.created_at.strftime('%d/%m/%Y %I:%M %p') }}</td>
+                        <td>
+                            {% if log.user %}
+                            {{ log.user.name }} ({{ log.user.role }})
+                            {% else %}
+                            <span class="text-gray-500">অজানা</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="px-2 py-1 bg-gold/20 rounded-full text-xs">{{ log.action }}</span></td>
+                        <td>{{ log.details or '-' }}</td>
+                        <td class="font-mono text-sm">{{ log.ip_address or '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-12 text-gray-400">
+                            <i class="fas fa-clipboard-list text-4xl mb-3"></i>
+                            <p>কোনো লগ পাওয়া যায়নি</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if logs.pages > 1 %}
+        <div class="flex justify-center items-center space-x-2 py-6">
+            {% if logs.has_prev %}
+            <a href="{{ url_for('audit_logs', page=logs.prev_num) }}" 
+               class="px-4 py-2 bg-gold/20 text-gold rounded-lg hover:bg-gold/30">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+
+            {% for page_num in logs.iter_pages() %}
+                {% if page_num %}
+                    <a href="{{ url_for('audit_logs', page=page_num) }}"
+                       class="px-4 py-2 {% if page_num == logs.page %}bg-gold text-royal{% else %}bg-gold/20 text-gold hover:bg-gold/30{% endif %} rounded-lg transition">
+                        {{ page_num }}
+                    </a>
+                {% else %}
+                    <span class="px-2">...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if logs.has_next %}
+            <a href="{{ url_for('audit_logs', page=logs.next_num) }}"
+               class="px-4 py-2 bg-gold/20 text-gold rounded-lg hover:bg-gold/30">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
